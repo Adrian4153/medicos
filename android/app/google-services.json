@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "1069119116151",
+    "firebase_url": "https://wecare-38867.firebaseio.com",
+    "project_id": "wecare-38867",
+    "storage_bucket": "wecare-38867.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1069119116151:android:681098acabfaa7fda90772",
+        "android_client_info": {
+          "package_name": "com.example.sms"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1069119116151-9al06n4g2tiqooc87f664cp0m3n85qko.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD18SV6XBRKSzIRH8Le220FGNAZiFCbpJM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1069119116151-9al06n4g2tiqooc87f664cp0m3n85qko.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1069119116151:android:d770d478dcb43675a90772",
+        "android_client_info": {
+          "package_name": "com.example.wecare_medics_ios"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1069119116151-9al06n4g2tiqooc87f664cp0m3n85qko.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD18SV6XBRKSzIRH8Le220FGNAZiFCbpJM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1069119116151-9al06n4g2tiqooc87f664cp0m3n85qko.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
