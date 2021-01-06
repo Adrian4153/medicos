@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:wecare_medics_ios/src/models/genero_model.dart';
+import 'package:wecare_medics_ios/src/models/registro_model.dart';
 import 'package:wecare_medics_ios/src/principal/arrays/arrays.dart';
 import 'package:wecare_medics_ios/src/principal/home.dart';
 import 'package:wecare_medics_ios/src/provider/genero_provider.dart';
+import 'package:wecare_medics_ios/src/provider/registro_provider.dart';
 import 'package:wecare_medics_ios/src/utilities/utilities.dart';
 
 class RegistroPage extends StatefulWidget {
@@ -27,7 +29,7 @@ class _RegistroPageState extends State<RegistroPage> {
 
   String cedula;
 
-  int numTelefono;
+  String  numTelefono;
 
   String email;
 
@@ -35,7 +37,7 @@ class _RegistroPageState extends State<RegistroPage> {
 
   String confPassword;
 
-  int numVendedor;
+  String numVendedor;
 
   Arrays arrays = new Arrays();
 
@@ -156,6 +158,24 @@ class _RegistroPageState extends State<RegistroPage> {
                                   }
 
                                   _formkey.currentState.save();
+                                  RegistroModel dataRegistro = new RegistroModel();
+                                  RegistroProvider registro = new RegistroProvider();
+
+                                  dataRegistro.nombre = nombres;
+                                  dataRegistro.apellidoP = apellidoP;
+                                  dataRegistro.apellidoM = apellidoM;
+                                  dataRegistro.especialidad = _idEspecialidad.toString();
+                                  dataRegistro.cedula = cedula;
+                                  dataRegistro.telefono = numTelefono;
+                                  dataRegistro.email = email;
+                                  dataRegistro.password = password;
+                                  dataRegistro.tipoUsuario = _idTipoUsuario.toString();
+                                  dataRegistro.genero = _idGenero.toString();
+                                  dataRegistro.fechaNacimiento = fechaN;
+                                  dataRegistro.nombreCompleto = nombres+" "+apellidoP+" "+apellidoM;
+                                  dataRegistro.numVendedor = numVendedor.toString();
+
+                                  registro.crearRegistro(dataRegistro);
 
                                  
                                 },
@@ -786,7 +806,7 @@ Widget _genero(){
                         }
                       },
                       onSaved: (String value) {
-                        apellidoP = value;
+                        numTelefono = value;
                       }),
                 ],
               ),
@@ -898,7 +918,7 @@ Widget _genero(){
                       }
                     },
                     onSaved: (String value) {
-                      apellidoP = value;
+                      password = value;
                     },
                     onChanged: (_email) {
                       setState(() {
@@ -957,7 +977,7 @@ Widget _genero(){
                       }
                     },
                     onSaved: (String value) {
-                      apellidoP = value;
+                      confPassword = value;
                     },
                     onChanged: (_email) {
                       setState(() {
@@ -1016,7 +1036,7 @@ Widget _genero(){
                         }
                       },
                       onSaved: (String value) {
-                        apellidoP = value;
+                        numVendedor = value;
                       }),
                 ],
               ),

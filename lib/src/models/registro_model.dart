@@ -3,6 +3,9 @@ import 'dart:convert';
 
 RegistroModel registroModelFromJson(String str) => RegistroModel.fromJson(json.decode(str));
 
+
+String registroModelToJson(RegistroModel data) => json.encode(data.toJson());
+
 class RegistroModel{
 
   String nombre;
@@ -62,15 +65,15 @@ class RegistroModel{
 
   Map<String, dynamic> toJson() =>{
 
-    "nombre"        : nombre,
-    "apellidoP"     : apellidoP,
-   "apellidoM"      : apellidoM,
-   "especialidad"   : especialidad,
+    "nombres"        : nombre,
+    "paterno"     : apellidoP,
+   "materno"      : apellidoM,
+   "idTipoEspecialidad"   : especialidad,
    "cedula"         : cedula,
    "telefono"       : telefono,
    "email"          : email,
-   "password"       : password,
-   "tipoUsuario"    : tipoUsuario,
+   "pass"       : password,
+   "rol"    : tipoUsuario,
    "genero"         : genero,
    "fechaNacimiento": fechaNacimiento,
    "nombreCompleto" : nombreCompleto,

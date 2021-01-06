@@ -15,7 +15,20 @@ class RegistroProvider{
 
     _baseUrl = utilitiesObj.getBASE_URL();
 
-    final baseUrl = '${_baseUrl}Empleados/create.php';
+    _baseUrl = '${_baseUrl}Empleados/create.php';
+
+    final resp = await http.post(_baseUrl,body: registroModelToJson(registro));
+
+    if(resp.statusCode == 200){
+
+      print("Respuesta: insertado");
+      return true;
+
+    } else{
+      return false;
+    }
+
+
 
     
 

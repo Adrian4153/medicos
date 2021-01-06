@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
       
       debugShowCheckedModeBanner: false,
       title: 'WECAREMEDICS',
-      initialRoute: 'registroPrueba',
+      initialRoute: 'home',
       routes: {
 
         'home'     : (BuildContext context) => HomePage(),
