@@ -59,9 +59,11 @@ class RegistroModel{
    genero         : json["genero"],
    fechaNacimiento: json["fechaNacimiento"],
    nombreCompleto : json["nombreCompleto"],
-   numVendedor    : json["numVendedor"],
+   numVendedor    : json["numeroVendedor"],
+
 
   );
+
 
   Map<String, dynamic> toJson() =>{
 
@@ -77,7 +79,7 @@ class RegistroModel{
    "genero"         : genero,
    "fechaNacimiento": fechaNacimiento,
    "nombreCompleto" : nombreCompleto,
-   "numVendedor"    : numVendedor, 
+   "numeroVendedor"    : numVendedor, 
 
   };
 

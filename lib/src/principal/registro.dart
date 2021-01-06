@@ -25,6 +25,8 @@ class _RegistroPageState extends State<RegistroPage> {
 
   String tipoUsuario;
 
+  String genero;
+
   String especialidad;
 
   String cedula;
@@ -53,13 +55,13 @@ class _RegistroPageState extends State<RegistroPage> {
 
   String selecEspecialidad = 'Selecciona';
 
-
+/*
   List<GeneroModel> listGenMo = new List();
 
   final generoP = GenerosProvider();
 
   Utilities objUtilities = new Utilities();
-
+*/
 
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
 
@@ -165,15 +167,15 @@ class _RegistroPageState extends State<RegistroPage> {
                                   dataRegistro.apellidoP = apellidoP;
                                   dataRegistro.apellidoM = apellidoM;
                                   dataRegistro.especialidad = _idEspecialidad.toString();
-                                  dataRegistro.cedula = cedula;
+                                  dataRegistro.cedula = "";
                                   dataRegistro.telefono = numTelefono;
                                   dataRegistro.email = email;
                                   dataRegistro.password = password;
-                                  dataRegistro.tipoUsuario = _idTipoUsuario.toString();
-                                  dataRegistro.genero = _idGenero.toString();
+                                  dataRegistro.tipoUsuario = tipoUsuario;
+                                  dataRegistro.genero = genero;
                                   dataRegistro.fechaNacimiento = fechaN;
                                   dataRegistro.nombreCompleto = nombres+" "+apellidoP+" "+apellidoM;
-                                  dataRegistro.numVendedor = numVendedor.toString();
+                                  dataRegistro.numVendedor = "";
 
                                   registro.crearRegistro(dataRegistro);
 
@@ -523,6 +525,8 @@ Widget _genero(){
                         setState(() {
                            _idGenero = arrays.generos.indexOf(opt);
                           selecGenero = opt;
+                        //Valor en string 
+                          genero = opt;
                         });
                       },
                     )
@@ -647,6 +651,8 @@ Widget _genero(){
 
                           _idTipoUsuario = arrays.tipoUsuario.indexOf(opt);
                           selecTipo = opt;
+                         //valor en string
+                          tipoUsuario = opt;
 
                         });
                       },
@@ -698,6 +704,8 @@ Widget _genero(){
 
                           _idEspecialidad = arrays.especialidades.indexOf(opt);
                           selecEspecialidad = opt;
+                          //valor en string
+                          especialidad = opt;
 
                         });
                       },
@@ -753,7 +761,7 @@ Widget _genero(){
                         }
                       },
                       onSaved: (String value) {
-                        apellidoP = value;
+                        cedula = value;
                       }),
                 ],
               ),
@@ -859,7 +867,7 @@ Widget _genero(){
                       }
                     },
                     onSaved: (String value) {
-                      apellidoP = value;
+                      email = value;
                     },
                     onChanged: (_email) {
                       setState(() {

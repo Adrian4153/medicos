@@ -19,12 +19,14 @@ class RegistroProvider{
 
     final resp = await http.post(_baseUrl,body: registroModelToJson(registro));
 
-    if(resp.statusCode == 200){
+    if(resp.statusCode == 201){
 
-      print("Respuesta: insertado");
+      print("Respuesta:"+resp.body);
       return true;
 
     } else{
+
+      print(resp.body);
       return false;
     }
 
