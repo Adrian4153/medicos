@@ -1,5 +1,11 @@
+import 'dart:convert';
+
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
+import 'package:wecare_medics_ios/src/models/usuario_model.dart';
 import 'package:wecare_medics_ios/src/principal/mapMedico.dart';
+import 'package:wecare_medics_ios/src/provider/usuario_provider.dart';
+import 'package:wecare_medics_ios/src/utilities/sessionManagement.dart';
 
 class LoginPage extends StatefulWidget {
 
@@ -8,9 +14,14 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+
+  final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
+
   String email;
 
   String password;
+
+  UsuarioProvider usuario = UsuarioProvider();
 
   @override
   Widget build(BuildContext context) {
@@ -75,14 +86,17 @@ Widget _loginForm(BuildContext context){
           margin: EdgeInsets.all(25.0),
           child: Container(
             margin: const EdgeInsets.only(top: 0.0),
-            child: Column(
-              children: <Widget>[
-                _logoApp(context),
-                _email(),
-                _password(),
-                _botones(context)
-              ],
-              ),
+            child: Form(
+              key: _formkey,
+                child: Column(
+                children: <Widget>[
+                  _logoApp(context),
+                  _email(),
+                  _password(),
+                  _botones(context)
+                ],
+                ),
+            ),
           ),
       
     ),
@@ -136,9 +150,7 @@ Widget _email(){
            },
            onSaved: (String value){
              email = value;
-           },
-           onChanged: (_email){
-             
+             print(value+" email:"+email);
            },
 
         ),
@@ -222,7 +234,7 @@ Widget _password(){
 
 Widget _botones(BuildContext context){
 
-    return  Container(
+    return Container(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 30.0),
             child: Row(
@@ -230,9 +242,28 @@ Widget _botones(BuildContext context){
               
               children: <Widget>[
                 
-                FlatButton(
-                            onPressed: (){
-                               Navigator.push(context, MaterialPageRoute(builder: (context) => MapMedic()));
+                FlatButton(onPressed: () async {         
+
+   if(!_formkey.currentState.validate()){
+     return;
+   }
+
+   _formkey.currentState.save();
+
+    await usuario.login(email, password, context);
+
+    SessionManagement session =new  SessionManagement();
+
+    bool sesionUser = await session.getSession();
+
+    if(sesionUser){
+      Navigator.pushReplacementNamed(context,"mapMedico");
+    }else{
+      Navigator.pushReplacementNamed(context,"login");
+    }
+
+
+                               
                             },
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
                             color: Colors.white,
@@ -261,4 +292,5 @@ Widget _botones(BuildContext context){
     );
 
 }
+
 }

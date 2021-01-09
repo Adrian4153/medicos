@@ -14,6 +14,8 @@ dependencies:
   firebase_storage: ^3.1.3
   google_maps_flutter: ^1.0.6
   mime_type:
+  crypto: ^2.1.5
+  shared_preferences: ^0.5.2
 
 
   cupertino_icons: ^1.0.0

@@ -32,7 +32,7 @@ del servidor
 
     mapa["genero"] = genero.genero;
     mapa["estatus"] = genero.estatus;
-
+ 
     final resp = await http.post(url, body: generoModelToJson(genero));
 
     if (resp.statusCode == 200) {
