@@ -1,9 +1,15 @@
 
+import 'dart:async';
+
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wecare_medics_ios/src/principal/perfil.dart';
+import 'package:wecare_medics_ios/src/principal/solicitudServicio.dart';
+import 'package:wecare_medics_ios/src/utilities/sessionManagement.dart';
 
 
 class MapMedic extends StatefulWidget {
@@ -15,9 +21,11 @@ class _MapMedicState extends State<MapMedic> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
 final SnackBar snackBar = const SnackBar(content: Text('Showing Snackbar'));
-
+final sesion = new SessionManagement();
  Icon cusIcon =Icon(Icons.search);
  Widget cusSearchBar = Text("Médico");
+
+ Completer<GoogleMapController> _controller = Completer();
 
  static const InputDecoration inputDecoration = InputDecoration(
   enabledBorder: const OutlineInputBorder(
@@ -45,6 +53,8 @@ final SnackBar snackBar = const SnackBar(content: Text('Showing Snackbar'));
 
   @override
   Widget build(BuildContext context) {
+
+    print(sesion.getSession().toString());
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
@@ -77,7 +87,7 @@ final SnackBar snackBar = const SnackBar(content: Text('Showing Snackbar'));
                     textInputAction: TextInputAction.go,
                     decoration: inputDecoration,
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Colors.blue,
                       fontSize: 16.0
                     ),
                   );
@@ -105,20 +115,245 @@ final SnackBar snackBar = const SnackBar(content: Text('Showing Snackbar'));
 
       ),
    
-       body: _viewMapa(),
+       body: Stack(
+
+           children: <Widget>[
+             
+              _viewMapa(context),
+              _viewServicios(),
+           ],
+         ),
 
     );
   }
 
-  Widget _viewMapa(){
-    return  GoogleMap(
-      initialCameraPosition: CameraPosition(
-        target: LatLng(20.6482277,-100.4034547),
-        zoom:20, 
-        )
-      );
-
+  Widget _viewMapa(BuildContext context){
+    
+    return  Container(
+      width: MediaQuery.of(context).size.width,
+      height:  MediaQuery.of(context).size.height,
+      child: GoogleMap(
+            initialCameraPosition: CameraPosition(
+              target: LatLng(20.6482277,-100.4034547),
+              zoom:20, 
+              ),
+              onMapCreated: (GoogleMapController controller){
+                _controller.complete(controller);
+              },
+            ),
+            
+    );
   
       }
-      
+
+      Widget _viewServicios(){
+
+        return Align(
+          alignment:  Alignment.bottomLeft,
+          child: Container(
+            margin: EdgeInsets.symmetric(vertical: 20.0),
+            height: 150.0,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: <Widget>[
+                SizedBox(width: 10.0),
+                 FlatButton(
+                  child:Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: _servicios("asset/solicitar_medico.png",
+                  "Solicitar médico"),
+                  ),
+                              onPressed: () {
+                                
+                                //print("seleccionado");
+                                Navigator.push(context,MaterialPageRoute(builder: (context)=> SolicitudServicioPage()));
+                              },
+                            ),
+                 SizedBox(width: 10.0),
+                 Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: _servicios("asset/solicitar_enfermero.png",
+                  "Enfermero"),
+                  ),
+                SizedBox(width: 10.0),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: _servicios("asset/farmacias.png",
+                  "Farmacias"),
+                  ),
+                   SizedBox(width: 10.0),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: _servicios("asset/hospitales.png",
+                  "Hospitales"),
+                  ),
+                   SizedBox(width: 10.0),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: _servicios("asset/agendar_solicitud.png",
+                  "Agendar solicitud"),
+                  ),
+                   SizedBox(width: 10.0),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: _servicios("asset/historial_medico.png",
+                  "Historial médico"),
+                  ),
+                   SizedBox(width: 10.0),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: _servicios("asset/seguridad.png",
+                  "Seguridad en APP"),
+                  ),
+                   SizedBox(width: 10.0),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: _servicios("asset/emergencias.png",
+                  "Emergencias"),
+                  )
+              ],
+              ),
+          ),
+        );
+
+      }
+
+      Widget _servicios(String _image, String _nombre){
+
+        
+        return Container(
+
+          child: FittedBox(
+            child: Material(
+              color: Colors.white,
+              elevation: 14.0,
+              borderRadius: BorderRadius.circular(24.0),
+              shadowColor: Color(0x802196F3),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Container(
+                    width: 180,
+                    height: 200,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(24.0),
+                      child: Padding(
+                        padding: EdgeInsets.all(30),
+                        child: Image.asset(
+                          _image,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+                  ),
+                   Container(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: _detallesServicios(_nombre),
+                        ),
+                    ),
+                    
+                ],
+              ),
+            ),
+          ),
+
+        );
+
+      }
+
+      Widget _detallesServicios(String nombreServicio) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: Container(
+              child: Text(nombreServicio,
+            style: TextStyle(
+                color: Colors.blue,
+                fontSize: 24.0,
+                fontWeight: FontWeight.bold),
+          )),
+        ),
+        SizedBox(height:5.0),
+        Container(
+              child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              Container(
+                  child: Text(
+                "4.1",
+                style: TextStyle(
+                  color: Colors.black54,
+                  fontSize: 18.0,
+                ),
+              )),
+              Container(
+                child: Icon(
+                  FontAwesomeIcons.solidStar,
+                  color: Colors.amber,
+                  size: 15.0,
+                ),
+              ),
+              Container(
+                child: Icon(
+                  FontAwesomeIcons.solidStar,
+                  color: Colors.amber,
+                  size: 15.0,
+                ),
+              ),
+              Container(
+                child: Icon(
+                  FontAwesomeIcons.solidStar,
+                  color: Colors.amber,
+                  size: 15.0,
+                ),
+              ),
+              Container(
+                child: Icon(
+                  FontAwesomeIcons.solidStar,
+                  color: Colors.amber,
+                  size: 15.0,
+                ),
+              ),
+              Container(
+                child: Icon(
+                  FontAwesomeIcons.solidStarHalf,
+                  color: Colors.amber,
+                  size: 15.0,
+                ),
+              ),
+               Container(
+                  child: Text(
+                "(946)",
+                style: TextStyle(
+                  color: Colors.black54,
+                  fontSize: 18.0,
+                ),
+              )),
+            ],
+          )),
+          SizedBox(height:5.0),
+        Container(
+                  child: Text(
+                "American \u00B7 \u0024\u0024 \u00B7 1.6 mi",
+                style: TextStyle(
+                  color: Colors.black54,
+                  fontSize: 18.0,
+                ),
+              )),
+              SizedBox(height:5.0),
+        Container(
+            child: Text(
+          "Closed \u00B7 Opens 17:00 Thu",
+          style: TextStyle(
+              color: Colors.black54,
+              fontSize: 18.0,
+              fontWeight: FontWeight.bold),
+        )),
+      ],
+    );
+  }
+
   }

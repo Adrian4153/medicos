@@ -1,25 +1,46 @@
-import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SessionManagement{
 
   SharedPreferences  _sharedPreferences;
   String shared_pref_name = "session";
-  String session_key ="session_user";
+  String session_key = "session_user";
 
-   Future<bool> setSession() async {
 
-    _sharedPreferences = await SharedPreferences.getInstance();
-    
-     await _sharedPreferences.setBool(session_key,true);
+   setIdUsuario(String value) async { 
+    _sharedPreferences= await SharedPreferences.getInstance();
+    print("setUsuario: "+value);
+    _sharedPreferences.setString('idUsuario', value);
   }
 
-    Future<bool> getSession() async {
+  getIdUsuario() async {
+    _sharedPreferences = await SharedPreferences.getInstance();
+    print("usuario:"+_sharedPreferences.getString("idUsuario"));
+    String idUsuario="";
+    idUsuario = _sharedPreferences.getString('idUsuario');
+    return idUsuario;
+  }
 
-    //_sharedPreferences = await SharedPreferences.getInstance();
-    if(_sharedPreferences == null){
-      _sharedPreferences = await SharedPreferences.getInstance();
-    }
+  setFolio(String value) async { 
+    _sharedPreferences= await SharedPreferences.getInstance();
+    print("setFolio: "+value);
+    _sharedPreferences.setString('folio', value);
+  }
+
+  getFolio() async {
+    _sharedPreferences = await SharedPreferences.getInstance();
+    print("getFolio: "+_sharedPreferences.getString('folio'));
+    return _sharedPreferences.getString('folio');
+  }
+
+  setSession(bool value) async {
+    _sharedPreferences = await SharedPreferences.getInstance();
+   _sharedPreferences.setBool(session_key,value);
+  }
+
+    getSession() async {
+
+  _sharedPreferences = await SharedPreferences.getInstance();
 
     bool session = false;
 
@@ -27,6 +48,13 @@ class SessionManagement{
 
     return session;
 
+   }
+
+   removeData() async {
+
+     _sharedPreferences = await SharedPreferences.getInstance();
+     await _sharedPreferences.clear();
+    
    }
 
 }

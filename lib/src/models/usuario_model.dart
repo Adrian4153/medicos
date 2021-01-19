@@ -18,6 +18,7 @@ String paterno;
 String materno;
 String estatuscorreo;
 String idUsuario;
+String estatusPagadoRegistro;
 
 UsuarioModel({
 
@@ -28,10 +29,11 @@ this.paterno = '',
 this.materno = '',
 this.estatuscorreo = '',
 this.idUsuario = '',
+this.estatusPagadoRegistro = ''
 
 });
 
-factory UsuarioModel.fromJson(Map<String,dynamic> json) => UsuarioModel(
+factory UsuarioModel.fromJson(Map<String,dynamic> json) => new  UsuarioModel(
 
   folio          : json["folio"] ,
   pass           : json["pass"],
@@ -40,6 +42,7 @@ factory UsuarioModel.fromJson(Map<String,dynamic> json) => UsuarioModel(
   materno        : json["materno"],
   estatuscorreo  : json["estatuscorreo"],
   idUsuario      :json["idUsuario"],
+  estatusPagadoRegistro  :json["estatusPagadoRegistro"]  
 
 );
 
@@ -51,7 +54,8 @@ Map<String,dynamic> toJson()=>{
   "paterno"       :paterno,
   "materno"       :materno,
   "estatuscorreo" :estatuscorreo,
-  "idUsuario"     :idUsuario
+  "idUsuario"     :idUsuario,
+  "estatusPagadoRegistro"  : estatusPagadoRegistro
 
 };
 

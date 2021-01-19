@@ -5,8 +5,10 @@ import 'package:wecare_medics_ios/src/models/genero_model.dart';
 import 'package:wecare_medics_ios/src/models/registro_model.dart';
 import 'package:wecare_medics_ios/src/principal/arrays/arrays.dart';
 import 'package:wecare_medics_ios/src/principal/home.dart';
+import 'package:wecare_medics_ios/src/principal/mapMedico.dart';
 import 'package:wecare_medics_ios/src/provider/genero_provider.dart';
 import 'package:wecare_medics_ios/src/provider/registro_provider.dart';
+import 'package:wecare_medics_ios/src/utilities/sessionManagement.dart';
 import 'package:wecare_medics_ios/src/utilities/utilities.dart';
 
 class RegistroPage extends StatefulWidget {
@@ -31,7 +33,7 @@ class _RegistroPageState extends State<RegistroPage> {
 
   String cedula;
 
-  String  numTelefono;
+  String numTelefono;
 
   String email;
 
@@ -55,6 +57,8 @@ class _RegistroPageState extends State<RegistroPage> {
 
   String selecEspecialidad = 'Selecciona';
 
+  SessionManagement _sessionManag = new SessionManagement();
+
 /*
   List<GeneroModel> listGenMo = new List();
 
@@ -62,6 +66,20 @@ class _RegistroPageState extends State<RegistroPage> {
 
   Utilities objUtilities = new Utilities();
 */
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void _checkSession() async {
+    bool sesion = await _sessionManag.getSession();
+
+    if (sesion == true) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => MapMedic()));
+    }
+  }
 
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
 
@@ -152,21 +170,22 @@ class _RegistroPageState extends State<RegistroPage> {
                                 child: Text('Registrarse',
                                     style: TextStyle(
                                         fontSize: 14.0, color: Colors.black)),
-                                onPressed: () {
+                                onPressed: () async {
                                   if (!_formkey.currentState.validate()) {
-
-                                    
                                     return;
                                   }
 
                                   _formkey.currentState.save();
-                                  RegistroModel dataRegistro = new RegistroModel();
-                                  RegistroProvider registro = new RegistroProvider();
+                                  RegistroModel dataRegistro =
+                                      new RegistroModel();
+                                  RegistroProvider registro =
+                                      new RegistroProvider();
 
                                   dataRegistro.nombre = nombres;
                                   dataRegistro.apellidoP = apellidoP;
                                   dataRegistro.apellidoM = apellidoM;
-                                  dataRegistro.especialidad = _idEspecialidad.toString();
+                                  dataRegistro.especialidad =
+                                      _idEspecialidad.toString();
                                   dataRegistro.cedula = "";
                                   dataRegistro.telefono = numTelefono;
                                   dataRegistro.email = email;
@@ -174,12 +193,53 @@ class _RegistroPageState extends State<RegistroPage> {
                                   dataRegistro.tipoUsuario = tipoUsuario;
                                   dataRegistro.genero = genero;
                                   dataRegistro.fechaNacimiento = fechaN;
-                                  dataRegistro.nombreCompleto = nombres+" "+apellidoP+" "+apellidoM;
+                                  dataRegistro.nombreCompleto = nombres +
+                                      " " +
+                                      apellidoP +
+                                      " " +
+                                      apellidoM;
                                   dataRegistro.numVendedor = "";
 
-                                  registro.crearRegistro(dataRegistro);
+                                  bool _checkRegistro = false;
 
-                                 
+                                  _checkRegistro = await registro
+                                      .crearRegistro(dataRegistro);
+
+                                  if (_checkRegistro == true && password == confPassword) {
+                                    showDialog(
+                                        context: context,
+                                        builder: (_) => new AlertDialog(
+                                              title: Text("Usuario registrado"),
+                                              content: Text(
+                                                  "Para ingresar valida tu correo y a continuación ve a login"),
+                                              actions: <Widget>[
+                                                FlatButton(
+                                                    onPressed: () {
+                                                      Navigator
+                                                          .pushReplacementNamed(
+                                                              context, "home");
+                                                    },
+                                                    child: Text(
+                                                        "Aceptar"))
+                                              ],
+                                            ));
+                                  }else{
+                                       showDialog(
+                                        context: context,
+                                        builder: (_) => new AlertDialog(
+                                              title: Text("Error de registro"),
+                                              content: Text(
+                                                  "A ocurrido un error intenta registrarte de nuevo y si el problema persiste comunicate a WECARE"),
+                                              actions: <Widget>[
+                                                FlatButton(
+                                                    onPressed: () {
+                                                    
+                                                    },
+                                                    child: Text(
+                                                        "Intentar de nuevo"))
+                                              ],
+                                            ));
+                                  }
                                 },
                               ),
                               FlatButton(
@@ -422,6 +482,7 @@ class _RegistroPageState extends State<RegistroPage> {
                     decoration: inputDecoration.copyWith(),
                     type: DateTimePickerType.date,
                     dateMask: 'd MMM, yyyy',
+                    locale: const Locale('es', ""),
                     initialValue: DateTime.now().toString(),
                     firstDate: DateTime(1970),
                     lastDate: DateTime.now(),
@@ -445,7 +506,7 @@ class _RegistroPageState extends State<RegistroPage> {
     );
   }
 
-   List<DropdownMenuItem<String>> getOpcionesGenero(){
+  List<DropdownMenuItem<String>> getOpcionesGenero() {
     List<DropdownMenuItem<String>> lista = new List();
 
     arrays.generos.forEach((genero) {
@@ -457,7 +518,6 @@ class _RegistroPageState extends State<RegistroPage> {
 
     return lista;
   }
-
 
   List<DropdownMenuItem<String>> getOpcionesTipoUsuario() {
     List<DropdownMenuItem<String>> lista = new List();
@@ -475,8 +535,6 @@ class _RegistroPageState extends State<RegistroPage> {
   List<DropdownMenuItem<String>> getOpcionesEspecialidad() {
     List<DropdownMenuItem<String>> lista = new List();
 
-    
-
     arrays.especialidades.forEach((especialidad) {
       lista.add(DropdownMenuItem(
         child: Text(especialidad),
@@ -485,13 +543,10 @@ class _RegistroPageState extends State<RegistroPage> {
     });
 
     return lista;
-
   }
 
-
-Widget _genero(){
-
-  return SafeArea(
+  Widget _genero() {
+    return SafeArea(
       child: Container(
         child: Row(
           children: <Widget>[
@@ -509,28 +564,27 @@ Widget _genero(){
                     height: 10.0,
                   ),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 1),
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(30)),
-                    child:DropdownButton(
-                      items: getOpcionesGenero(),
-                      isExpanded: true,
-                      iconEnabledColor: Colors.blue,
-                      iconSize: 35,
-                      underline: SizedBox(),
-                      value: selecGenero,
-                      style: TextStyle(color: Colors.black),
-                      onChanged: (opt){
-                        setState(() {
-                           _idGenero = arrays.generos.indexOf(opt);
-                          selecGenero = opt;
-                        //Valor en string 
-                          genero = opt;
-                        });
-                      },
-                    )
-                  ),
+                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 1),
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(30)),
+                      child: DropdownButton(
+                        items: getOpcionesGenero(),
+                        isExpanded: true,
+                        iconEnabledColor: Colors.blue,
+                        iconSize: 35,
+                        underline: SizedBox(),
+                        value: selecGenero,
+                        style: TextStyle(color: Colors.black),
+                        onChanged: (opt) {
+                          setState(() {
+                            _idGenero = arrays.generos.indexOf(opt);
+                            selecGenero = opt;
+                            //Valor en string
+                            genero = opt;
+                          });
+                        },
+                      )),
                 ],
               ),
             )
@@ -538,9 +592,7 @@ Widget _genero(){
         ),
       ),
     );
-
-
-}
+  }
 
 /*
 
@@ -648,12 +700,10 @@ Widget _genero(){
                       style: TextStyle(color: Colors.black),
                       onChanged: (opt) {
                         setState(() {
-
                           _idTipoUsuario = arrays.tipoUsuario.indexOf(opt);
                           selecTipo = opt;
-                         //valor en string
+                          //valor en string
                           tipoUsuario = opt;
-
                         });
                       },
                     ),
@@ -701,12 +751,10 @@ Widget _genero(){
                       style: TextStyle(color: Colors.black),
                       onChanged: (opt) {
                         setState(() {
-
                           _idEspecialidad = arrays.especialidades.indexOf(opt);
                           selecEspecialidad = opt;
                           //valor en string
                           especialidad = opt;
-
                         });
                       },
                     ),

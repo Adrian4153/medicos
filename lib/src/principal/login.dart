@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:wecare_medics_ios/src/models/usuario_model.dart';
+import 'package:wecare_medics_ios/src/principal/home.dart';
 import 'package:wecare_medics_ios/src/principal/mapMedico.dart';
 import 'package:wecare_medics_ios/src/provider/usuario_provider.dart';
 import 'package:wecare_medics_ios/src/utilities/sessionManagement.dart';
@@ -21,13 +22,38 @@ class _LoginPageState extends State<LoginPage> {
 
   String password;
 
+  SessionManagement _sessionManag = new SessionManagement();
+
+  bool firstSession = false;
+
   UsuarioProvider usuario = UsuarioProvider();
+
+  @override
+  void initState(){
+    super.initState();
+    _checkSession();
+  
+
+  }
+
+  void _checkSession()async{
+  bool sesion =await  _sessionManag.getSession();
+    
+    if(sesion == true){
+
+      setState(() {
+         firstSession = true;
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> MapMedic()));
+      });
+
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
-       children: <Widget>[
+       children:<Widget>[
          _fondoApp(context),
          _loginForm(context),
        ],
@@ -36,8 +62,6 @@ class _LoginPageState extends State<LoginPage> {
   }
 
 Widget _fondoApp( BuildContext contex){
-
-  
   return Stack(
     //fondo
     children: <Widget>[
@@ -242,7 +266,7 @@ Widget _botones(BuildContext context){
               
               children: <Widget>[
                 
-                FlatButton(onPressed: () async {         
+                FlatButton(onPressed: (){         
 
    if(!_formkey.currentState.validate()){
      return;
@@ -250,20 +274,8 @@ Widget _botones(BuildContext context){
 
    _formkey.currentState.save();
 
-    await usuario.login(email, password, context);
+   _accesLogin();
 
-    SessionManagement session =new  SessionManagement();
-
-    bool sesionUser = await session.getSession();
-
-    if(sesionUser){
-      Navigator.pushReplacementNamed(context,"mapMedico");
-    }else{
-      Navigator.pushReplacementNamed(context,"login");
-    }
-
-
-                               
                             },
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
                             color: Colors.white,
@@ -291,6 +303,38 @@ Widget _botones(BuildContext context){
           ),
     );
 
+}
+
+void _accesLogin() async {
+  
+    await usuario.login(email, password, context);
+
+    SessionManagement session =new  SessionManagement();
+
+    bool sesionUser = await session.getSession();
+
+    if(sesionUser != true){
+
+      showDialog(context: context,
+      builder: (_)=> new AlertDialog(
+        title:Text("Error"),
+        content: Text("Correo/contraseña incorrecto"),
+        actions: <Widget>[
+          FlatButton(
+            onPressed: () { 
+              Navigator.pop(context);
+              },
+            child: Text("Intentar de nuevo"))
+        ],
+      ));
+     
+
+    }else{
+      
+       print(_sessionManag.getIdUsuario());
+       Navigator.pushReplacementNamed(context,"mapMedico");
+    
+    }
 }
 
 }

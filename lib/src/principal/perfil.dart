@@ -1,20 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wecare_medics_ios/src/models/perfil_model.dart';
+import 'package:wecare_medics_ios/src/models/usuario_model.dart';
+import 'package:wecare_medics_ios/src/principal/pago.dart';
+import 'package:wecare_medics_ios/src/provider/usuario_provider.dart';
+import 'package:wecare_medics_ios/src/utilities/sessionManagement.dart';
+
+import 'home.dart';
 
 class PerfilPage extends StatelessWidget {
+
+
+
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
-  final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
+     SessionManagement _sessionManag = new SessionManagement();
+
+     UsuarioProvider _usuario = new UsuarioProvider();
+
+     UsuarioModel us = new UsuarioModel();
+     String usuario;
+
 
   @override
   Widget build(BuildContext context) {
+
+     
+    
     return Scaffold(
-      key: scaffoldKey,
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Text('WECARE')),
       body: Stack(
         children: [_fondoApp(), _fotoPerfil(context)],
       ),
     );
   }
+
 
   Widget _fondoApp() {
     return Container(
@@ -25,11 +46,14 @@ class PerfilPage extends StatelessWidget {
     );
   }
 
+  
+
   Widget _fotoPerfil(BuildContext context) {
     return Container(
         padding: EdgeInsets.symmetric(horizontal: 0.0, vertical: 15.0),
         child: Column(
           children: <Widget>[
+          
             Image.asset(
               'asset/usuario.png',
               alignment: Alignment.center,
@@ -46,6 +70,7 @@ class PerfilPage extends StatelessWidget {
     final orientation = MediaQuery.of(context);
     final size = MediaQuery.of(context).size;
     final largo = size.height - 200;
+    
 
     return SingleChildScrollView(
       child: Column(
@@ -68,14 +93,16 @@ class PerfilPage extends StatelessWidget {
                 elevation: 0,
                 child: ListView(
                   children: [
-                    _nombreCompleto(),
-                    _numCedula(),
-                    _especialidad(),
-                    _correo(),
-                    _numTelefonico(),
-                    _domicilio(),
-                    _numFolio(),
-                    _tipoUsuario(),
+                  
+                  _crearNombre(context),
+                  _numCedula(context),
+                  _especialidad(context),
+                  _correo(context),
+                  _numTelefonico(context),
+                  _domicilio(context),
+                  _crearFolio(context),
+                  _tipoUsuario(context),
+                  _estatusPago(context),
                     Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: Container(
@@ -86,19 +113,19 @@ class PerfilPage extends StatelessWidget {
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(5)),
                               color: Colors.white,
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 10.0, vertical: 0.0),
-                              child: Text('CERRAR SESIÓN',
-                                  style: TextStyle(
-                                      fontSize: 14.0, color: Colors.black)),
+                              child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 10.0, vertical: 0.0),
+                                  child: Text('CERRAR SESIÓN',
+                                      style: TextStyle(
+                                          fontSize: 14.0,
+                                          color: Colors.black))),
                               onPressed: () {
-                                if (!_formkey.currentState.validate()) {
-                                  return;
-                                }
-
-                                _formkey.currentState.save();
+                                _sessionManag.removeData();
+                                Navigator.push(context,MaterialPageRoute(builder: (context)=> HomePage()));
                               },
                             ),
+                       
                             FlatButton(
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(5)),
@@ -126,106 +153,230 @@ class PerfilPage extends StatelessWidget {
     );
   }
 
-  Widget _nombreCompleto() {
-    return Container(
-      child: Column(
-        children: <Widget>[
-          ListTile(
-              title: Text('Nombre completo: '),
-              subtitle: Text('Eduardo Gutierrez Sandoval'))
-        ],
-      ),
+  Widget _crearFolio(BuildContext context){
+    return FutureBuilder(
+      future: _usuario.cargarPerfil(),
+      builder: (BuildContext context, AsyncSnapshot<PerfilModel> snapshot) {
+        if ( snapshot.hasData ) {
+          
+
+          PerfilModel _perf = new PerfilModel();
+
+            _perf =snapshot.data;
+
+          return ListTile(
+            title: Text("Folio:"),
+            subtitle: _perf.folio != null ? Text("${_perf.folio}") :  Text(""),
+          );
+         
+        } else {
+          return Center( child: CircularProgressIndicator());
+        }
+      },
     );
   }
 
-  Widget _numCedula() {
-    return Container(
-      child: Column(
-        children: <Widget>[
-          ListTile(
-            title: Text('Num cedula: '),
-            subtitle: Text('27XXXX'),
-          )
-        ],
-      ),
+  Widget _crearNombre(BuildContext context){
+  return FutureBuilder(
+      future: _usuario.cargarPerfil(),
+      builder: (BuildContext context, AsyncSnapshot<PerfilModel> snapshot) {
+        if ( snapshot.hasData ) {
+          
+
+          PerfilModel _perf = new PerfilModel();
+
+            _perf =snapshot.data;
+
+          return ListTile(
+            title: Text("Nombre:"),
+            subtitle: _perf.nombres != null || _perf.paterno != null || _perf.materno != null ? 
+            Text("${_perf.nombres} ${_perf.paterno} ${_perf.materno}") : Text("${_perf.nombres} ${_perf.paterno} ${_perf.materno}"),
+          );
+         
+        } else {
+        return Center( );
+        }
+      },
     );
+
   }
 
-  Widget _especialidad() {
-    return Container(
-      child: Column(
-        children: <Widget>[
-          ListTile(
-            title: Text('Especialidad: '),
-            subtitle: Text('Especialidad'),
-          )
-        ],
-      ),
-    );
+ 
+
+  Widget _numCedula(BuildContext context) {
+    return FutureBuilder(
+      future: _usuario.cargarPerfil(),
+      builder: (BuildContext context, AsyncSnapshot<PerfilModel> snapshot){
+        if(snapshot.hasData){
+          PerfilModel _perf = new PerfilModel();
+
+          _perf = snapshot.data;
+
+          return ListTile(
+            title: Text("Cedula: "),
+            subtitle: _perf.cedula != null ? Text("${_perf.cedula} "): Text(""),
+          );
+        } else {
+        return Center( );
+        }
+      }
+      );
   }
 
-  Widget _correo() {
-    return Container(
-      child: Column(
-        children: <Widget>[
-          ListTile(
-            title: Text('Correo: '),
-            subtitle: Text('correo@correo.com'),
-          ),
-        ],
-      ),
-    );
+  Widget _especialidad(BuildContext context) {
+    return FutureBuilder(
+      future: _usuario.cargarPerfil(),
+      builder: (BuildContext context, AsyncSnapshot<PerfilModel> snapshot){
+        if(snapshot.hasData){
+          PerfilModel _perf = new PerfilModel();
+
+          _perf = snapshot.data;
+
+          return ListTile(
+            title: Text("Cedula: "),
+            subtitle:  _perf.especialidad != null ? Text("${_perf.especialidad} "): Text(""),
+          );
+        } else {
+          return Center( );
+        }
+      }
+      );
   }
 
-  Widget _numTelefonico() {
-    return Container(
-      child: Column(
-        children: <Widget>[
-          ListTile(
-            title: Text('Num teléfonico: '),
-            subtitle: Text('4444444444'),
-          )
-        ],
-      ),
-    );
+  Widget _correo(BuildContext context) {
+    return FutureBuilder(
+      future: _usuario.cargarPerfil(),
+      builder: (BuildContext context, AsyncSnapshot<PerfilModel> snapshot){
+        if(snapshot.hasData){
+          PerfilModel _perf = new PerfilModel();
+
+          _perf = snapshot.data;
+
+          return ListTile(
+            title: Text("Correo: "),
+            subtitle:  _perf.email != null ? Text("${_perf.email} "): Text(""),
+          );
+        } else {
+          return Center( );
+        }
+      }
+      );
   }
 
-  Widget _domicilio() {
-    return Container(
-      child: Column(
-        children: <Widget>[
-          ListTile(
-            title: Text('Domicilio: '),
-            subtitle: Text('Los cumbres del lago '),
-          )
-        ],
-      ),
-    );
+  Widget _numTelefonico(BuildContext context) {
+    return FutureBuilder(
+      future: _usuario.cargarPerfil(),
+      builder: (BuildContext context, AsyncSnapshot<PerfilModel> snapshot){
+        if(snapshot.hasData){
+          PerfilModel _perf = new PerfilModel();
+
+          _perf = snapshot.data;
+
+          return ListTile(
+            title: Text("Teléfono: "),
+            subtitle:  _perf.telefono != null ? Text("${_perf.telefono} "): Text(""),
+          );
+        } else {
+          return Center( );
+        }
+      }
+      );
   }
 
-  Widget _numFolio() {
-    return Container(
-      child: Column(
-        children: <Widget>[
-          ListTile(
-            title: Text('Num foliio: '),
-            subtitle: Text('89238923'),
-          )
-        ],
-      ),
-    );
+  Widget _domicilio(BuildContext context) {
+     return FutureBuilder(
+      future: _usuario.cargarPerfil(),
+      builder: (BuildContext context, AsyncSnapshot<PerfilModel> snapshot){
+        if(snapshot.hasData){
+          PerfilModel _perf = new PerfilModel();
+
+          _perf = snapshot.data;
+
+          return ListTile(
+            title: Text("Domicilio: "),
+            subtitle: _perf.calle != null && _perf.colonia != null ? 
+            Text("${_perf.calle} ${_perf.colonia}") : Text(""),
+          );
+        } else {
+          return Center( );
+        }
+      }
+      );
   }
 
-  Widget _tipoUsuario() {
-    return Container(
-      child: Column(
-        children: <Widget>[
-          ListTile(
-            title: Text('Tipo usuario: '),
-            subtitle: Text('Médico'),
-          )
-        ],
-      ),
-    );
+  Widget _numFolio(BuildContext context) {
+     return FutureBuilder(
+      future: _usuario.cargarPerfil(),
+      builder: (BuildContext context, AsyncSnapshot<PerfilModel> snapshot){
+        if(snapshot.hasData){
+          PerfilModel _perf = new PerfilModel();
+
+          _perf = snapshot.data;
+
+          return ListTile(
+            title: Text("Folio: "),
+            subtitle:_perf.folio != null ? Text("${_perf.folio} ") : Text(""),
+          );
+        } else {
+         return Center( );
+        }
+      }
+      );
   }
-}
+
+  Widget _tipoUsuario(BuildContext context) {
+      return FutureBuilder(
+      future: _usuario.cargarPerfil(),
+      builder: (BuildContext context, AsyncSnapshot<PerfilModel> snapshot){
+        if(snapshot.hasData){
+          PerfilModel _perf = new PerfilModel();
+
+          _perf = snapshot.data;
+
+          return ListTile(
+            title: Text("Tipo usuario: "),
+            subtitle: _perf.rol != null ? Text("${_perf.rol}") : Text(""),
+          );
+        } else {
+          return Center( );
+        }
+      }
+      );
+  }
+
+   Widget _estatusPago(BuildContext context) {
+      return FutureBuilder(
+      future: _usuario.cargarPerfil(),
+      builder: (BuildContext context, AsyncSnapshot<PerfilModel> snapshot){
+        if(snapshot.hasData){
+          PerfilModel _perf = new PerfilModel();
+
+          _perf = snapshot.data;
+
+          return ListTile(
+            title: Text("Estatus de pago: "),
+            subtitle: _perf.estatusPagoRegistro == 1 ? Text("Pagado") : 
+             FlatButton(
+                             
+                              color: Colors.white38,
+                              child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 10.0, vertical: 0.0),
+                                  child: Text('Pago pendiente',
+                                      style: TextStyle(
+                                          fontSize: 14.0,
+                                          color: Colors.black))),
+                              onPressed: () {
+                               
+                                Navigator.push(context,MaterialPageRoute(builder: (context)=> PagoPage()));
+                              },
+                            ),
+            
+          );
+        } else {
+          return Center( );
+        }
+      }
+      );
+  }
+  }
