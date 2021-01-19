@@ -12,7 +12,7 @@ class HomePage  extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
-  List<GeneroModel> _genero;
+  
   final generosProvider = new GenerosProvider();
 
   @override
